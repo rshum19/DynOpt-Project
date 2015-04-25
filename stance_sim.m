@@ -15,7 +15,7 @@ theta0 = X0(5);
 
 % Initial stance variables
 T_sp = 0.2;
-tspan = linspace(0,T_sp,100);
+tspan = linspace(0,T_sp,30);
 Lb0 = L0;
 Lb0dot = cos(theta0)*xdot0 + sin(theta0)*ydot0;             % Radial velocity [m/s]
 theta0dot = (-sin(theta0)*xdot0+cos(theta0)*ydot0)/L0;       % Angular velocity [rad/s]
@@ -66,6 +66,9 @@ stance_char.ydot_lo = ydot_lo;              % y-velocity @ Lift-off [m/s]
 stance_char.xf = xf;                        % Foot x-trajectory [m]
 stance_char.yf = yf;                        % Foot y-trajectory [m]
 stance_char.theta_lo = theta_lo;            % Lift-off angle [rad]
+stance_char.Lb = Lb;                        % Spring compression trajectory
+stance_char.period = T(end);                % Stance phase time period
+stance_char.thetadot = thetadot;
 
 end
 

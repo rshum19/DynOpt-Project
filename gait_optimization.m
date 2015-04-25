@@ -14,9 +14,12 @@ clear all; close all; clc;
 options = optimoptions('fmincon','Algorithm','interior-point','MaxFunEvals',10e5,'TolFun',1e-5,'TolX', 1e-3,'Display','iter','UseParallel','always');
 
 % Initial conditions
+xb_dot = 0.5;
+yb_dot = 0;
+theta_td = degtorad(95);
+h_apex0 = 0.8;
 
-
-X0 = [xb_dot, theta_td, y_apex];
+X0 = [xb_dot, theta_td, h_apex0];
 
 % Do optimization
-[x,fval,exitflag,output] = fmincon(@criterion,X0,[],[],[],[],[],[],@constraints,options);
+[x,fval,exitflag,output] = fmincon(@(p)criterion(p,X0),X0,[],[],[],[],[],[],@(p)constraints(p,X0),options);
