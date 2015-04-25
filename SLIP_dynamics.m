@@ -1,10 +1,10 @@
 % Simulation of Conservative SLIP model dynamics during flight phase
 % by Roberto Shu
 
-% Clear worskpace
+%% Clear worskpace
 clear all; close all; clc;
 
-% Initialize constant 
+%% Initialize constant 
 g = 9.81;       % Acceleration due to gravity [m/s^2]
 h_apex = 0.8;   % Apex height [m]
 L0 = 0.5;       % Max lenght of leg [m]
@@ -23,80 +23,55 @@ theta_td = degtorad(95);    % Touch-down angle
 
 % Do simulation
 X0 = [x0, y0, xdot0, ydot0, theta_td];
+[Leg_flight] = flight_sim(h_apex, L0, X0, descent);
 
-[Leg] = flight_sim(h_apex, L0, X0, descent);
-x_flight,y_flight,xf_flight,yf_flight,xdot_impact,ydot_impact
+x_flight = Leg_flight.x;
+y_flight = Leg_flight.y;
+xf_flight = Leg_flight.xf;
+yf_flight = Leg_flight.yf;
+xdot_impact = Leg_flight.xdot_end;
+ydot_impact = Leg_flight.ydot_end;
+
 %% Stance Phase path
 
 % Touch-down characteristics
 xtd = xf_flight(end);
 ytd = yf_flight(end);
+xdot_td = xdot_impact;
+ydot_td = ydot_impact;
 
-% Initial parameters
-T_sp = 0.2;
-tspan = linspace(0,T_sp,30);
-theta0 = theta_td;
-Lb0 = L0;
-Lb0dot = cos(theta0)*xdot_impact + sin(theta0)*ydot_impact;
-theta0dot = (-sin(theta0)*xdot_impact+cos(theta0)*ydot_impact)/L0;
+% Simulate stance phase
+X0 = [xtd, ytd, xdot_td, ydot_td, theta_td];
+[stance_char] = stance_sim(X0, L0);
 
-X0 = [Lb0 theta0 Lb0dot theta0dot];               % Vector of initial conditions
-
-% Intergrate 
-[T,X] = ode45(@stance_dynamics,tspan,X0);
-
-% Extract results
-Lb = X(:,1);
-theta = X(:,2);
-Lbdot = X(:,3);
-thetadot = X(:,4);
-
-% Calculate body position
-for i = 1:length(T)
-    xb_stance(i) = xtd + Lb(i)*cos(theta(i));
-    yb_stance(i) = ytd + Lb(i)*sin(theta(i));
-end
-
-% Foot location
-xf_stance = xtd*ones(1,length(xb_stance));
-yf_stance = ytd*ones(1,length(yb_stance));
-
-% Concatenate position vector
-x = [x_flight,xb_stance];
-y = [y_flight,yb_stance];
-xf = [xf_flight,xf_stance];
-yf = [yf_flight,yf_stance];
-
-Lbdot_lo = Lbdot(end-5);
-theta_lo = theta(end-5);
-thetadot_lo = thetadot(end-5);
-
-% Convert angular and radial velocity to cartesian
-xdot_lo = Lbdot_lo*cos(theta_lo)-L0*thetadot_lo*sin(theta_lo)
-ydot_lo = Lbdot_lo*sin(theta_lo)+L0*thetadot_lo*cos(theta_lo)
+xb_stance = stance_char.x;
+yb_stance = stance_char.y;
+x_lo = stance_char.x_lo;
+y_lo = stance_char.y_lo; 
+xdot_lo = stance_char.xdot_lo; 
+ydot_lo = stance_char.ydot_lo; 
+xf_stance = stance_char.xf;
+yf_stance = stance_char.yf;
+theta_lo = stance_char.theta_lo;
 
 %% Flight Phase - ascent
-x_lo = x(end);
-y_lo = y(end);
 
-% Flight time
-t_fa = ydot_lo/g;
+% Simulate ascent flight phase
+X0 = [x_lo, y_lo, xdot_lo, ydot_lo, theta_lo];
+[Leg_flight2] = flight_sim(h_apex, L0, X0, ascent);
 
-% CoM trajectory calculation
-t = linspace(0,t_fa,20);
-x_flight2 = x_lo + xdot_lo*t;
-y_flight2 = y_lo + ydot_lo*t-g/2*t.^2;
-
-% Calculate foot location during flight
-xf_flight2 = x_flight2-L0*cos(theta_lo);
-yf_flight2 = y_flight2-L0*sin(theta_lo);
+x_flight2 = Leg_flight2.x;
+y_flight2 = Leg_flight2.y;
+xf_flight2 = Leg_flight2.xf;
+yf_flight2 = Leg_flight2.yf;
+xdot_impact2 = Leg_flight2.xdot_end;
+ydot_impact2 = Leg_flight2.ydot_end;
 
 % Concatenate position vector
 x = [x_flight,xb_stance,x_flight2];
 y = [y_flight,yb_stance,y_flight2];
 xf = [xf_flight,xf_stance,xf_flight2];
 yf = [yf_flight,yf_stance,yf_flight2];
-
 
 %% Result plots
 
@@ -108,14 +83,14 @@ plot(xb_stance,yb_stance)
 subplot(3,1,3)
 plot(x_flight2,y_flight2)
 
-figure
 % Animation
+figure
 for i = 1:length(x)
     plot(x,y,'g:');
     hold on;
     plot(x(i),y(i),'o','MarkerSize',10,'MarkerFaceColor','b')
     plot([x(i),xf(i)],[y(i),yf(i)])
-    axis([0,0.5,0,1])
+    axis([0,0.4,0,1])
     xlabel('x-positon [m]')
     ylabel('y-positon [m]')
     pause(0.2);

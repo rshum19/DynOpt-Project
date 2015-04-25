@@ -46,7 +46,7 @@ yddot = -g;
 
 % Calculate flight phase characteristics:
 range = x0*t_flight+xddot*t_flight;     % Range [m]
-xdot_end = xdot0;                    % X-velocity @ impact/apex
+xdot_end = xdot0;                       %  X-velocity @ impact/apex
 ydot_end = ydot0 + yddot*t_flight;      % Y-velocity @ impact/apex
 
 % CoM trajectory calcualtion
