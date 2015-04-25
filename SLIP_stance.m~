@@ -1,0 +1,58 @@
+% Simulation of SLIP stance dynamics
+% by Roberto Shu
+
+% Clear workspace
+clear all; close all; clc;
+
+% Need to use ode45
+T_sp = 1;                                           % Stance phase period [s]
+L0 = 0.5;
+xdot = 1.5;
+ydot = -3.2850;
+
+m = 7;  
+k = 2800;
+T_sp = pi()*sqrt(m/k);
+
+% Initial parameters
+Lb0 = L0;
+
+theta0 = degtorad(130);
+Lb0_dot = cos(theta0)*xb_dot + sin(theta0)*yb_dot;
+theta0_dot = (-sin(theta0)*xb_dot + cos(theta0)*yb_dot)/L0;
+
+X0 = [Lb0 theta0 Lb0_dot theta0_dot];               % Vector of initial conditions
+
+
+% Intergrate 
+[T,X] = ode45(@stance_dynamics,[0,T_sp],X0);
+
+% Calculate body position
+for i = 1:length(T)
+    x(i) = X(i,1)*sin(X(i,2)-pi()/2);
+    y(i) = X(i,1)*cos(X(i,2)-pi()/2);
+end
+
+figure
+plot(x,y)
+title('X-Y COM position')
+
+figure
+plot(T,y)
+title('Y COM position')
+
+figure
+plot(T,X(:,1))
+title('Leg length')
+
+figure
+plot(T,wrapTo360(radtodeg(X(:,2))))
+title('Angle position')
+
+figure
+plot(T,X(:,3))
+title('Leg compresion velocity')
+
+figure
+plot(T,X(:,4))
+title('Angular velocity')
