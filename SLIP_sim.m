@@ -55,19 +55,30 @@ ydot_lo = stance_char.ydot_lo;
 xf_stance = stance_char.xf;
 yf_stance = stance_char.yf;
 theta_lo = stance_char.theta_lo;
+liftoff = stance_char.liftoff;
 
 %% Flight Phase - ascent
 
-% Simulate ascent flight phase
-X0 = [x_lo, y_lo, xdot_lo, ydot_lo, theta_lo];
-[Leg_flight2] = flight_sim(h_apex, L0, X0, ascent);
+if (liftoff)
+    % Simulate ascent flight phase
+    X0 = [x_lo, y_lo, xdot_lo, ydot_lo, theta_lo];
+    [Leg_flight2] = flight_sim(h_apex, L0, X0, ascent);
 
-x_flight2 = Leg_flight2.x;
-y_flight2 = Leg_flight2.y;
-xf_flight2 = Leg_flight2.xf;
-yf_flight2 = Leg_flight2.yf;
-xdot_impact2 = Leg_flight2.xdot_end;
-ydot_impact2 = Leg_flight2.ydot_end;
+    x_flight2 = Leg_flight2.x;
+    y_flight2 = Leg_flight2.y;
+    xf_flight2 = Leg_flight2.xf;
+    yf_flight2 = Leg_flight2.yf;
+    xdot_impact2 = Leg_flight2.xdot_end;
+    ydot_impact2 = Leg_flight2.ydot_end;
+else
+    Leg_flight2 = [];
+    x_flight2 = [];
+    y_flight2 = [];
+    xf_flight2 = [];
+    yf_flight2 = [];
+    xdot_impact2 = [];
+    ydot_impact2 = [];
+end
 
 % Concatenate position vector
 x = [x_flight,xb_stance,x_flight2];

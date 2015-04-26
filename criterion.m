@@ -37,14 +37,14 @@ X = [x0 y0 xb_dot yb_dot theta_td];
 % Results
 h_apex_start = h_apex0;
 h_apex_end = COMtrajectory.y(end);
-xdot_apex_start = xb0_dot;
-xdot_apex_end = Leg_flight2.xdot_end;
+%xdot_apex_start = xb0_dot;
+%xdot_apex_end = Leg_flight2.xdot_end;
 thetatd_dot = stance_char.thetadot(1);
 
 
 % Evaluate cost function
 
-    score = thetatd_dot + (h_apex_start-h_apex_end)^2 + (xdot_apex_start-xdot_apex_end)^2;
+    score = thetatd_dot + (h_apex_start-h_apex_end)^2;% + (xdot_apex_start-xdot_apex_end)^2;
 
 end
 

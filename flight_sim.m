@@ -37,7 +37,7 @@ if (phase == descent)
     
 elseif(phase == ascent)
     
-    t_flight = ydot0/g;             % Flight time [s]
+    t_flight = abs(ydot0/g);             % Flight time [s]
 end
 
 % Define flight phase dynamics

@@ -14,10 +14,11 @@ ascent = 1;
 % Initialize initial conditions: starts at the apex
 x0 = 0;
 y0 = h_apex;
-xdot0 = 1.5;                % COM x-velocity [m/s]
+xdot0 = 0.5;                % COM x-velocity [m/s]
 ydot0 = 0;                  % COM y-velocity [m/s], 0 becuase @ apex
 theta_lo = pi()/3;          % Lift-off angle
 theta_td = degtorad(95);    % Touch-down angle  
+theta_td = degtorad(170);
 
 %% Flight Phase - descent
 
@@ -31,6 +32,9 @@ xf_flight = Leg_flight.xf;
 yf_flight = Leg_flight.yf;
 xdot_impact = Leg_flight.xdot_end;
 ydot_impact = Leg_flight.ydot_end;
+
+figure
+plot(x_flight,y_flight);
 
 %% Stance Phase path
 
